@@ -10,20 +10,58 @@ namespace AjaxModals.Controllers
 {
     public class HomeController : Controller
     {
+        //Como parametrizar o modal
+        //https://softdevpractice.com/blog/asp-net-core-mvc-ajax-modals/
+        //https://softdevpractice.com/blog/asp-net-core-ajax-modals-part-2/
+
+        private readonly static List<Contact> Contacts = new List<Contact>();
+
         public IActionResult Index()
         {
-            return View();
+            var isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+            if (isAjax)
+            {
+                return PartialView("_Table", Contacts);
+            }
+
+            return View(Contacts);
         }
 
-        public IActionResult Privacy()
+        public IActionResult Contact()
         {
-            return View();
+            var model = new Contact { };
+
+            return PartialView("_ContactModalPartial", model);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public IActionResult Contact(Contact model)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (ModelState.IsValid)
+            {
+                Contacts.Add(model);
+                CreateNotification("Contact saved!");
+            }
+
+            return PartialView("_ContactModalPartial", model);
         }
+
+        [NonAction]
+        private void CreateNotification(string message)
+        {
+            TempData.TryGetValue("Notifications", out object value);
+            var notifications = value as List<string> ?? new List<string>();
+            notifications.Add(message);
+            TempData["Notifications"] = notifications;
+        }
+
+        public IActionResult Notifications()
+        {
+            TempData.TryGetValue("Notifications", out object value);
+            var notifications = value as IEnumerable<string> ?? Enumerable.Empty<string>();
+            return PartialView("_NotificationsPartial", notifications);
+        }
+
+
     }
 }
