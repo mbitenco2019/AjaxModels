@@ -34,6 +34,12 @@
                     tableElement.replaceWith(table);
                 });
 
+                var tableElement = $('#clients');
+                var tableUrl = tableElement.data('url');
+                $.get(tableUrl).done(function (table) {
+                    tableElement.replaceWith(table);
+                });
+
                 placeholderElement.find('.modal').modal('hide');
             }
         });

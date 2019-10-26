@@ -1,0 +1,18 @@
+﻿@model IEnumerable<Client>
+<table id="clients" class="table mt-5" data-url="@Url.Action("Index")">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var client in Model)
+        {
+            <tr>
+                <td>@client.FirstName @client.LastName</td>
+                <td>@client.Email</td>
+            </tr>
+        }
+    </tbody>
+</table>
